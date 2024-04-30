@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tienda_virtual/api/obtener_info_api.dart';
 
 import 'package:tienda_virtual/api/validar_usuario_api.dart';
 import 'package:tienda_virtual/pantallas/inicio.dart';
@@ -29,12 +30,12 @@ class Login extends StatelessWidget {
           children: [
             TextField(
               controller: usernameController,
-              decoration: InputDecoration(labelText: 'Nombre de usuario'),
+              decoration: const InputDecoration(labelText: 'Nombre de usuario'),
             ),
             TextField(
               controller: passwordController,
               obscureText: true,
-              decoration: InputDecoration(labelText: 'Contraseña:'),
+              decoration: const InputDecoration(labelText: 'Contraseña:'),
             ),
             SizedBox(height: 20),
             ElevatedButton(
@@ -56,9 +57,11 @@ class Login extends StatelessWidget {
     final sesionExitosa = await api.loginUser(username, password);
 
     if (sesionExitosa) {
+      final userdata = await obtenerData(username);
+
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => const Inicio(),
+          builder: (context) => Inicio(userData: userdata),
         ),
       );
     } else {
