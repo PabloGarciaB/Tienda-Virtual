@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:tienda_virtual/pantallas/Login.dart';
-import 'package:tienda_virtual/pantallas/inicio.dart';
 
 void main() {
   runApp(const MainApp());
