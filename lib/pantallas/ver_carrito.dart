@@ -115,7 +115,7 @@ class _VerCarritoState extends State<VerCarrito> {
             title: const Text(
                 'Escoja un articulo para agregar a su compra de manera gratuita'),
             content: FutureBuilder<List<Map<String, dynamic>>>(
-                future: obtenerProductoCategoria(categoria),
+                future: obtenerProductoRegalo(context, categoria),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
@@ -166,9 +166,7 @@ class _VerCarritoState extends State<VerCarrito> {
         return ResumenCompra(carrito: widget.carrito);
       },
     ).then((_) {
-      setState(() {
-        widget.carrito.items.clear();
-      });
+      widget.carrito.items.clear();
     });
   }
 }
