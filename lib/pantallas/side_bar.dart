@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tienda_virtual/api/obtener_info.dart';
+import 'package:tienda_virtual/api/obtener_info_api.dart';
 
 import '../modelo/modelo.dart';
 
@@ -14,7 +14,7 @@ class _SideBarState extends State<SideBar> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: FutureBuilder<Modelo>(
+      child: FutureBuilder<Usuario>(
         future: obtenerData(),
         builder: ((context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -57,7 +57,7 @@ class _SideBarState extends State<SideBar> {
                           children: [
                             ListTile(
                               title: Text(
-                                '${data.first ?? ''} ${data.last ?? ''}',
+                                '${data.name!.firstname ?? ''} ${data.name!.lastname ?? ''}',
                                 style: const TextStyle(
                                   fontSize: 28,
                                 ),
@@ -70,13 +70,20 @@ class _SideBarState extends State<SideBar> {
                             ),
                             ListTile(
                               leading: const Icon(Icons.location_city),
-                              title: Text(data.address ?? '???'),
+                              title: Text('Ciudad'),
+                              subtitle: Text(data.address!.city ?? '???'),
                             ),
                             ListTile(
-                              leading: const Icon(Icons.date_range_outlined),
-                              title: const Text('Usuario desde:'),
-                              subtitle: Text(data.created ?? ' ????'),
-                            )
+                              leading: const Icon(Icons.location_on_outlined),
+                              title: const Text('Nombre de calle y numero:'),
+                              subtitle: Text(
+                                  '${data.address!.street ?? ''} ${data.address!.number ?? ''}'),
+                            ),
+                            ListTile(
+                              leading: const Icon(Icons.phone),
+                              title: const Text('Telefono:'),
+                              subtitle: Text(data.phone ?? '????'),
+                            ),
                           ],
                         ),
                       )
