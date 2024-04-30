@@ -23,7 +23,7 @@ class Login extends StatelessWidget {
         backgroundColor: const Color.fromARGB(255, 130, 84, 211),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -37,12 +37,12 @@ class Login extends StatelessWidget {
               obscureText: true,
               decoration: const InputDecoration(labelText: 'Contraseña:'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
                 onPressed: () {
                   _login(context);
                 },
-                child: Text('Entrar'))
+                child: const Text('Entrar'))
           ],
         ),
       ),
@@ -68,8 +68,8 @@ class Login extends StatelessWidget {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text('Error'),
-          content: Text('Usuario o contraseña incorrecta'),
+          title: const Text('Error'),
+          content: const Text('Usuario o contraseña incorrecta'),
           actions: [
             TextButton(
                 onPressed: () {

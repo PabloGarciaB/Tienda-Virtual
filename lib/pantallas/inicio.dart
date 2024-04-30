@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:tienda_virtual/modelo/modelo.dart';
+import 'package:tienda_virtual/pantallas/productos_por_categoria.dart';
 import 'package:tienda_virtual/pantallas/side_bar.dart';
 
 import '../api/obtener_categoria_api.dart';
+import '../modelo/carrito.dart';
 
 class Inicio extends StatelessWidget {
   final Usuario userData;
+  final Carrito carrito = Carrito();
 
-  const Inicio({super.key, required this.userData});
+  Inicio({
+    super.key,
+    required this.userData,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +30,7 @@ class Inicio extends StatelessWidget {
               child: Text('Error al intentar obtener la informacion'),
             );
           }
-          final categorias_data = snapshot.data ?? [];
+          final categoriasData = snapshot.data ?? [];
 
           return Scaffold(
               appBar: AppBar(
@@ -38,9 +43,9 @@ class Inicio extends StatelessWidget {
               ),
               drawer: SideBar(userData: userData),
               body: GridView.builder(
-                itemCount: categorias_data.length,
+                itemCount: categoriasData.length,
                 itemBuilder: (context, index) {
-                  final categoria = categorias_data[index];
+                  final categoria = categoriasData[index];
                   return Padding(
                     padding: const EdgeInsets.all(8),
                     child: Card.outlined(
@@ -57,12 +62,22 @@ class Inicio extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               const Padding(padding: EdgeInsets.all(1)),
-                              Text(
+                              const Text(
                                 '',
                                 maxLines: 1,
                               ),
                               IconButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ProductosPorCategoria(
+                                          categoria: categoria,
+                                          carrito: carrito,
+                                        ),
+                                      ),
+                                    );
+                                  },
                                   icon: const Icon(Icons.forward))
                             ],
                           ),

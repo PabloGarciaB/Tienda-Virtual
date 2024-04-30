@@ -27,7 +27,7 @@ class _SideBarState extends State<SideBar> {
                   padding: EdgeInsets.only(
                     top: MediaQuery.of(context).padding.top,
                   ),
-                  child: Column(
+                  child: const Column(
                     children: [
                       ListTile(
                         title: Text('Perfil',
