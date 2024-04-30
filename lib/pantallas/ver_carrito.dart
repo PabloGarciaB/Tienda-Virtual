@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tienda_virtual/api/obtener_categoria_api.dart';
+import 'package:tienda_virtual/pantallas/resumen_compra.dart';
 
 import '../modelo/carrito.dart';
 
@@ -13,48 +14,58 @@ class VerCarrito extends StatefulWidget {
 }
 
 class _VerCarritoState extends State<VerCarrito> {
-  bool productoGratsiAgregado = false;
+  bool productoGratisAgregado = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Carrito'),
-      ),
-      body: ListView.builder(
-        itemCount: widget.carrito.items.length,
-        itemBuilder: (context, index) {
-          final item = widget.carrito.items[index];
-          return ListTile(
-            title: Text(item.nombre),
-            trailing: Text('\$ ${item.precio}'),
-          );
-        },
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: ListView(
-          shrinkWrap: true,
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          children: [
-            Text('\$ ${widget.carrito.precioNeto}'),
-            if (widget.carrito.precioNeto >= 800 &&
-                !productoGratsiAgregado) //Observacion
+        appBar: AppBar(
+          title: const Text('Carrito'),
+        ),
+        body: ListView.builder(
+          itemCount: widget.carrito.items.length,
+          itemBuilder: (context, index) {
+            final item = widget.carrito.items[index];
+            return ListTile(
+              title: Text(item.nombre),
+              trailing: Text('\$ ${item.precio}'),
+            );
+          },
+        ),
+        bottomNavigationBar: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('\$ ${widget.carrito.precioNeto}'),
+              Visibility(
+                visible:
+                    widget.carrito.precioNeto >= 800 && !productoGratisAgregado,
+                child: Column(
+                  children: [
+                    const Text(
+                      'Puedes llevarte un articulo de regalo!',
+                      style:
+                          TextStyle(fontSize: 18, fontStyle: FontStyle.italic),
+                    ), //Observacion
+                    ElevatedButton(
+                      onPressed: () {
+                        mostrarProductosGratis(context);
+                      },
+                      child: const Text('Agregar producto gratis'),
+                    ),
+                  ],
+                ),
+              ),
               ElevatedButton(
                 onPressed: () {
-                  mostrarProductosGratis(context);
+                  finalizarCompra(context);
                 },
-                child: const Text('Agregar producto gratis'),
+                child: const Text('Finalizar compra'),
               ),
-            ElevatedButton(
-              onPressed: () {
-                finalizarCompra(context);
-              },
-              child: const Text('Finalizar compra'),
-            ),
-          ],
-        ),
-      ),
-    );
+            ],
+          ),
+        ));
   }
 
   void mostrarProductosGratis(BuildContext context) {
@@ -101,7 +112,8 @@ class _VerCarritoState extends State<VerCarrito> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('Productos gratis en $categoria'),
+            title: const Text(
+                'Escoja un articulo para agregar a su compra de manera gratuita'),
             content: FutureBuilder<List<Map<String, dynamic>>>(
                 future: obtenerProductoCategoria(categoria),
                 builder: (context, snapshot) {
@@ -121,16 +133,16 @@ class _VerCarritoState extends State<VerCarrito> {
                     child: Column(
                       children: productos.map((producto) {
                         return ListTile(
-                          title: Text(producto['title']),
-                          subtitle: Text('\$ ${producto['price']}'),
+                          title: Card(
+                            margin: EdgeInsets.all(4),
+                            child: Text(producto['title']),
+                          ),
                           onTap: () {
                             final nombreProducto = producto['title'];
-                            final precioProducto = producto['price'].toDouble();
                             Navigator.pop(context);
-                            agregarACarrito(
-                                context, nombreProducto, precioProducto);
+                            agregarACarrito(context, nombreProducto, 0);
                             setState(() {
-                              productoGratsiAgregado = true;
+                              productoGratisAgregado = true;
                             });
                           },
                         );
@@ -148,48 +160,15 @@ class _VerCarritoState extends State<VerCarrito> {
   }
 
   void finalizarCompra(BuildContext context) {
-    String resumen = resumenCompra();
-
     showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Resumen de compra'),
-            content: SizedBox(
-              width: double.maxFinite,
-              child: ListView(
-                shrinkWrap: true,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Text(
-                      resumen,
-                      style: const TextStyle(fontSize: 16.0),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Regresar al inicio'))
-            ],
-          );
-        });
-  }
-
-  String resumenCompra() {
-    String resumen = '';
-
-    for (var item in widget.carrito.items) {
-      resumen += '${item.nombre}: \$${item.precio}\n';
-    }
-
-    resumen += 'Total: \$${widget.carrito.precioNeto}\n';
-
-    return resumen;
+      context: context,
+      builder: (context) {
+        return ResumenCompra(carrito: widget.carrito);
+      },
+    ).then((_) {
+      setState(() {
+        widget.carrito.items.clear();
+      });
+    });
   }
 }
